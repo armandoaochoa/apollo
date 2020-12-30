@@ -1,0 +1,4 @@
+.DS_store
+migrations
+venv
+__pycache__

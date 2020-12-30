@@ -1,0 +1,74 @@
+{% extends "free_base.html" %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}      
+      <!-- (6) SEND -->
+      <section class="mb-section container">
+
+        <!-- progress bar -->
+        <div class="progressbar_container">
+          <ul class="progressbar">
+              <li class="active">Upload file</li>
+              <li class="active">Identify yourself</li>
+              <li class="active">Select recipients</li>
+              <li>Send</li>
+          </ul>
+        </div>
+
+        <div>  
+          <!-- section header-->
+          <div class="section_header centered">
+            <!-- section title -->
+            <h2 class="section_title centered mb-section-br">Check your email</h2>
+            <!-- section title caption-->
+            <p class="section_caption mb-section-br">
+              We've sent you a private link. Click to immediately begin sharing your file with selected recipients. Check back on it for regular status updates. 
+            </p>
+
+
+          </div>
+        </div>
+
+          <!-- section body -->
+          <div class="section_body centered">
+            <form>
+              <div class="op_completion_container centered">
+                <div class="op_completion_card op-off-white centered">
+                  <div class="recipient_card_label"><i class="fas fa-info-circle header_icon"></i></div>
+                  <p>Quick notes on your <i>free</i> file share:</p>
+                  <ul class="quick_notes_list">
+                    <li>Your file will auto-delete in <span style="font-weight: bold;">7</span> days.</li>
+                    <li>The watermarked versions of your file will auto-delete with the file.</li>
+                    <li>Recipients' signed NDAs will be collected and stored for legal record.</li>
+                  </ul>
+                  <br>
+                  <p class="light_caption premium_note">Need a dedicated account with expanded features and long-term file sharing?</p>
+                  <div class="recipient_button">
+                    <a href="{{ url_for('premium') }}">
+                      <button class="see_premium_plans " type="submit">
+                        See premium plans &nbsp;<i class="fas fa-arrow-circle-right"></i>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+                <div class="op_completion_card op-border centered">
+                  <!-- premium plan teaser -->
+                  <ul class="price">
+                    <div class="premium_teaser_header">Premium Plans</div>
+                      <div class="premium_teaser_caption">Starting at $19/mo</div>
+                    <div class="premium_teaser_row"><div class="teaser_icon"><i class="fas fa-concierge-bell"></i></div><div class="premium_teaser_point">Dedicated account with customer service available to you 7 days per week</div><div class="teaser_icon green-color"><i class="fas fa-check"></i></div></div>
+                    <div class="premium_teaser_row"><div class="teaser_icon"><i class="fas fa-users"></i></div><div class="premium_teaser_point">Share multiple files at once with hundreds of recipients at a time</div><div class="teaser_icon green-color"><i class="fas fa-check"></i></div></div>
+                    <div class="premium_teaser_row"><div class="teaser_icon mr-3"><i class="fas fa-handshake"></i></div><div class="premium_teaser_point">Stored downloadable executed NDAs for your own legal records</div><div class="teaser_icon green-color"><i class="fas fa-check"></i></div></div>
+                    <div class="premium_teaser_row"><div class="teaser_icon"><i class="fas fa-history"></i></div><div class="premium_teaser_point">Access recipient history including timestamped views and downloads</div><div class="teaser_icon green-color"><i class="fas fa-check"></i></div></div>
+                    <div class="premium_teaser_row"><div class="teaser_icon"><i class="fas fa-lock"></i></div><div class="premium_teaser_point">Full file control - disable downloading, printing, and screenshotting</div><div class="teaser_icon green-color"><i class="fas fa-check"></i></div></div>
+                  </ul>
+                </div>
+              </div>
+
+    
+            </form>
+          </div>          
+      </section>      
+{% endblock %}

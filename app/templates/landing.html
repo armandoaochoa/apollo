@@ -1,0 +1,230 @@
+{% extends "free_base.html" %}
+
+{% block scripts %}
+    <!-- file picker js for landing -->
+    <script src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {        
+        //// file picker ////
+        const security = {
+          security: {
+            policy: "{{ policy }}",
+            signature: "{{ signature }}"  
+          }        
+        }
+        const options = {
+          fromSources: ["local_file_system","url"],
+          accept: [".pdf","image/*","text/*",".xlsx",".xls",".doc",".docx",".ppt",".pptx"],
+          uploadInBackground: false,
+          transformations: {
+            crop: false,
+            circle: false,
+            rotate: false
+          },
+          onFileSelected: file => {
+            console.log('we in there...');
+            console.log(file);
+          },
+          onUploadDone: res => {
+            results = res;
+            console.log(results);
+
+            if (results.filesFailed.length > 0) {
+              console.log('Upload failed.');
+              window.alert('Upload failed. Please try again.');
+              window.location.href = '/';
+            }
+            if (results.filesUploaded.length == 1) {
+              uploaded_file = res.filesUploaded[0];
+
+              // update file name in currently hidden file uploaded display
+              $('#selected_file_name').text(function() {
+                return $(this).text().replace("XYZ3992384023.pdf", uploaded_file.filename); 
+              });
+
+              // update file type icon
+              switch (uploaded_file.mimetype) {
+                case 'application/pdf':
+                  break;
+
+                case 'image/jpeg':
+                case 'image/png':
+                  $("#uploaded_file_icon").attr("class", "fas");
+                  $("#uploaded_file_icon").addClass("fa-file-image");
+                  break;
+
+                case 'text/plain':
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-alt");
+                  break;
+
+                case 'application/msword':
+                case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-word");
+                  break;
+
+                case 'application/vnd.ms-excel':
+                case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-excel");
+                  break;
+
+                case 'text/csv':
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-csv");
+                  break;
+
+                case 'application/vnd.ms-powerpoint':
+                case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-powerpoint");
+                  break;
+
+                default:
+                  $("#uploaded_file_icon").attr("class", "fas fa-file-alt");
+                  break;
+              }
+              
+              // change file upload display to file uploaded display
+              $("#file_upload").css("display", "none");
+              $("#selected_file").css("display", "block");
+              $(".form_section").css("display", "block");
+
+              // insert file info into POST data...
+              $("#file_name").val(uploaded_file.filename);
+              $("#file_type").val(uploaded_file.mimetype);
+              $("#file_url").val(uploaded_file.url);
+              $("#file_upload_id").val(uploaded_file.uploadId);
+              $("#file_size").val(uploaded_file.size);
+
+            } else {
+              console.log('Error.');
+            }
+          },
+          onFileUploadFailed: (file, error) => {
+            console.log('Error: ' + JSON.stringify(file));
+            window.alert('Upload failed. Please try again.');
+            window.location.href = '/';
+          }
+        };
+        
+        const client = filestack.init("{{ api_key }}", security);
+        
+        // opens file upload UI when upload button is clicked
+        $(".upload_btn").click(function() {
+          client.picker(options).open();
+        });
+        $(".cancel_submission").click(function() {
+          $("#selected_file").css("display", "none");
+          $(".form_section").css("display", "none");
+          $("#file_upload").css("display", "block");
+
+          // remove hidden input values
+          $("#file_name").val("");
+          $("#file_type").val("");
+          $("#file_url").val("");
+          $("#file_upload_id").val("");
+          $("#file_size").val("");
+
+        });
+
+      });
+    </script>
+{% endblock %}
+
+{% block content %}    
+      <!-- (3) LANDING -->
+      <section class="landing mb-section">
+        <div class="container landing_container">
+          <div class="landing_content">
+      
+            <h1 class="section_title mb-landing-title">
+              Share confidential files with others under NDA
+            </h1>
+            <p class="landing-secondary mb-section-br">
+              Safely upload your file and invite selected recipients to view or download a unique watermarked version after e-signing an NDA.
+            </p>
+
+            <div class="file_selection centered">
+              <a id="file_upload" type="button" class="upload_btn">
+                <i class="fas fa-file-upload"></i> Select File
+              </a>
+              <span id="selected_file" class="button  selected_file_button">
+                File: &nbsp;<i id="uploaded_file_icon" class="fas fa-file-pdf"></i> <span id="selected_file_name">XYZ3992384023.pdf</span> &nbsp; <i class="far fa-times-circle cancel_submission"></i>
+              </span>
+              <form class="form_section centered" action="/id_poster" method="POST">
+                <input type="hidden" id="file_name" name="file_name" value="">
+                <input type="hidden" id="file_url" name="file_url" value="">
+                <input type="hidden" id="file_type" name="file_type" value="">
+                <input type="hidden" id="file_size" name="file_size" value="">
+                <input type="hidden" id="file_upload_id" name="file_upload_id" value="">
+                <button class="submit_btn" type="submit">Submit &nbsp;<i class="far fa-check-square"></i></button>
+              </form>
+              <p class="light_caption mt-small">No sign-up or payment required. Basic use is free!<br> <a href="{{ url_for('premium') }}"><b><u>Discover our premium options.</u></b></a></p>
+            </div>
+
+          </div>
+          <div class="landing_preview">
+      
+            <div>
+              <img src="{{ url_for('static', filename='assets/signature-stock.jpg') }}" class="feature_img stock">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="call-out">
+        100% Private & Secure. Downloadable Legal Records. Free to Try!&nbsp; <i class="fas fa-clipboard-list"></i>
+      </section>
+
+      <section class="mb-section container"> <!-- landing feature_container-->
+        <div style="display:block;"> <!-- feature_container -->
+          <div class="feature">
+            <div class="feature_item w-image">
+              <img src="{{ url_for('static', filename='assets/signature.png') }}" class="feature_img">
+            </div>
+
+            <div class="feature_item w-desc ml-15">
+              <h2>Collect downloadable NDAs with hand-drawn signatures</h5>
+              <p class="landing-secondary">Skip the hassle of printing, scanning, signing, uploading, and emailing. You have the option to allow UnderNDA to serve a legally binding NDA to each invited recipient before gaining access to the file. The executed agreements are available for download in your dashboard.</p>
+            </div>
+          </div>
+          
+          <div class="feature">
+            <div class="feature_item w-desc">
+              <h2>Automate dynamic watermarks on your files to prevent leaks</h5>
+              <p class="landing-secondary">When sharing private documents, you shouldn't leave anything to chance. We don't. If you choose, we will apply a transparent watermark to your document customized with each recipient's identifying information.</p>
+            </div>
+
+            <div class="feature_item w-image ml-15">
+              <img src="{{ url_for('static', filename='assets/watermark.png') }}" class="feature_img">
+            </div>
+          </div>
+          
+          <div class="feature">
+            <div class="feature_item w-image">
+              <img src="{{ url_for('static', filename='assets/certificate.png') }}" class="feature_img">
+            </div>
+
+            <div class="feature_item w-desc ml-15">
+              <h2>Keep track of every interaction with your files</h5>
+              <p class="landing-secondary">UnderNDA tracks your invited recipients' interactions with your shared files, from identity verification through download. You'll have access to a certificates detailing dates, times, IP addresses, browsers, locations, file checksums, views, and more.</p> 
+            </div>
+          </div>
+          
+          <div class="feature">
+            <div class="feature_item w-desc">
+              <h2>Maintain full control over who, how, and when</h5>
+              <p class="landing-secondary">Invite others to view or revoke access at any time. Restrict ability to download, print, or share. It's your file and your information. Make instant changes from your dashboard should the need ever arise.</p> 
+            </div>
+            <div class="feature_item w-image ml-15">
+              <img src="{{ url_for('static', filename='assets/time_remaining2.png') }}" class="feature_img">
+            </div>
+          </div>
+
+          
+        </div>
+      </section>
+
+      <section class="call-out">
+        Premium Plans: Multiple Users Per Account, Unlimited Sharing! <a href="{{ url_for('premium') }}">Learn more &nbsp;<i class="fas fa-arrow-circle-right"></i></a>
+      </section>
+
+
+{% endblock %}

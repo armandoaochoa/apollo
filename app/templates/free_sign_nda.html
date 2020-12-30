@@ -1,0 +1,191 @@
+{% extends "free_base.html" %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+        // signature pad - keep inside so loads after html
+        var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+          backgroundColor: 'rgba(255, 255, 255, 0)',
+          penColor: 'rgb(0, 0, 0)'
+        });
+
+        var winWidth = $(this).width(); 
+
+        // set signature canvas size on load
+        switch(true) {
+          case winWidth >= 630:
+            $("#signature-pad").attr("width", 550);
+            break;
+          
+          case winWidth >= 530:
+            $("#signature-pad").attr("width", 450);
+            break;
+
+          case winWidth >= 430:
+            $("#signature-pad").attr("width", 350);
+            break;
+
+          case winWidth >= 320:
+            $("#signature-pad").attr("width", 300);
+            break;
+        }
+
+        $("#save-signature").click(function(e) {
+          e.preventDefault();
+          var data = signaturePad.toDataURL('image/png');
+          $("#signature-preview").attr("src", data);
+          $(".signature").attr("value", data);
+
+          // display executed signature section
+          $("#sign_nda").css("border", "1px dotted black");
+          $(".signature-component").css("display", "none");
+          $("#executed_signature").css("display", "block");
+
+        });
+
+        $("#clear-signature").click(function(e) {
+          e.preventDefault();
+          signaturePad.clear();
+          $("#executed_signature").css("display", "none");
+        });
+
+        // helper function - wait for user to finish resizing 
+        var waitForFinalEvent = (function () {
+          var timers = {};
+          return function (callback, ms, uniqueId) {
+            if (!uniqueId) {
+              uniqueId = "Don't call this twice without a uniqueId";
+            }
+            if (timers[uniqueId]) {
+              clearTimeout (timers[uniqueId]);
+            }
+            timers[uniqueId] = setTimeout(callback, ms);
+          };
+        })();
+
+
+        // make signature canvas responsive
+        $(window).on('resize', function() {
+          waitForFinalEvent( function() { 
+            console.log("Resize called...");
+            var winWidth = $(this).width(); 
+
+            switch(true) {
+              case winWidth >= 630:
+                $("#signature-pad").attr("width", 550);
+                break;
+              
+              case winWidth >= 530:
+                $("#signature-pad").attr("width", 450);
+                break;
+
+              case winWidth >= 430:
+                $("#signature-pad").attr("width", 350);
+                break;
+
+              case winWidth >= 320:
+                $("#signature-pad").attr("width", 300);
+                break;
+            }
+
+          }, 800, "changed");
+        });
+
+        $('.nda_agree').click( function(e) {
+          $(this).parent().append('<div style="text-align: center;"><img src="data:image/gif;base64,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" style="width: 30px;" /></div>');
+          $(this).hide();
+        });
+
+
+      });
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+      <!-- [RECIPIENT] (2) SIGN NDA -->
+      <section class="mb-section container">
+
+        <!-- progress bar -->
+        <div class="progressbar_container">
+          <ul class="progressbar">
+              <li class="active">Click invitation</li>
+              <li class="active">Confirm identity</li>
+              <li>Sign NDA</li>
+              <li>Access File</li>
+          </ul>
+        </div>
+
+        <div>  
+          <!-- section header-->
+          <div class="section_header centered">
+            <!-- section title -->
+            <h2 class="section_title centered mb-section-br">Non-Disclosure Agreement</h2>
+            <!-- section title caption-->
+            <p class="section_caption   mb-section-br">
+              You must read and sign the following Non-Disclosure Agreement before accessing the file. If you agree, please indicate your understanding and add your signature where needed.
+            </p>
+
+
+          </div>
+
+          <!-- section body -->
+          <div class="section_body centered">
+            <div class="nda">
+            <h3>Terms of Access</h3>
+
+            <p>This Non-disclosure Agreement ("the Agreement”), effective <u>{{ date }},</u> is made and entered into by:</p>
+            <p><u>{% if recipient_organization != none and recipient_organization != '' %} {{ recipient_organization }} {% else %}{{ recipient_first_name }} {{ recipient_last_name }}{% endif %} ({{ recipient_email }}) </u>, ("the Recipient")</p>            
+            <p><u>{% if owner_organization != none %} {{ owner_organization }}{% else %}{{ owner_first_name }} {{ owner_last_name }}{% endif %} ({{ owner_email }}) </u>, ("the Owner")</p>
+            <p>The Agreement governs the disclosure of the Owner's information to the Recipient, including but not limited to any and all non-public information contained in these documents (“Confidential Information”). The Agreement shall be governed by the laws of Delaware without giving effect to its provisions regarding conflict of laws.</p>
+            <p>The Recipient hereby agrees as follows:</p>
+
+            <p><b>1.</b> The Recipient agrees (i) to not disclose any Confidential Information or any information derived therefrom to any third party, (ii) to keep the Owner’s Confidential Information confidential and take all reasonable precautions to protect the confidentiality of such Confidential Information with the same degree of care with which it protects the confidentiality of its own confidential information, but in no event with less than a reasonable degree of care, and (iii) to not use any Confidential Information for any purpose whatsoever except as approved in writing by the Owner. </p>
+
+            <p><b>2.</b> All right, title, and interest in and to the Confidential Information shall remain with the Owner. Nothing in this Agreement is intended to grant any rights to the Recipient. The Recipient agrees to promptly destroy or return all Confidential Information and copies thereof upon request by the Owner.</p>
+
+            <p><b>3.</b> Breaches of this Agreement may cause harm to the Owner, for which the Owner shall be entitled to seek an injunction or similar legal or equitable relief against any such breach. </p>
+
+            <p><b>4.</b> If the Confidential Information is protected under the terms of a separate confidentiality contract between the Owner and the Recipient, then the Agreement does not supersede any terms of such separate confidentiality contract.</p>
+            
+            <p>The Recipient indicates understanding of the Agreement and agrees to adhere to its terms by signing below.</p>
+
+            <!--<div style="width: 100%; border: 1px dotted black; text-align: left; padding: 10px;">-->
+            <h4>SIGNATURE</h4>
+            <form id="sign_nda" action="{{ url_for('free_recipient_processor', private_invitation_url=invitation_url) }}" method="POST">
+              <p>By signing below, I confirm that I have reviewed and agree to the contents of the Agreement.</p>
+              <p>{% if recipient_organization != none and recipient_organization != '' %}{{ recipient_organization }}{% endif %}</p>
+              <section class="signature-component">
+                <canvas id="signature-pad" width="550" height="100"></canvas>
+                <p>{{ recipient_first_name }} {{ recipient_last_name }}, Affirmed Signatory</p>
+                <div>
+                  <button id="save-signature">Save</button>
+                  <button id="clear-signature">Clear</button>
+                </div>
+                <br>
+              </section>
+              
+              <!--</div>-->
+              <section id="executed_signature">
+                <img id="signature-preview">
+                <hr>
+                <p>{{ recipient_first_name }} {{ recipient_last_name }}, Affirmed Signatory</p>
+                <p>Date: <u>{{ date }}</u></p>
+                <p>I agree to use electronic records and signatures and agree to UnderNDA's <a>Terms of Service.</a> <input type="checkbox" name="agreement" required></p>
+                <button class="see_premium_plans nda_agree" type="submit">
+                  I Agree to the Non-Disclosure Terms &nbsp;<i class="fas fa-signature"></i><br>
+                </button>
+                <input type="hidden" name="signature" class="signature" required>
+              </section>
+            </form>
+
+          </div>
+        </div>
+          
+      </section>    
+{% endblock %}

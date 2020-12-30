@@ -1,0 +1,310 @@
+{% extends "free_base.html" %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+      $(document).ready(function() {
+        // Helper function to convert iso time to readable format 
+        function dateToYMD(date) {
+          var strArray=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          var d = date.getDate();
+          var m = strArray[date.getMonth()];
+          var y = date.getFullYear(); 
+          var t = date.getTime().toLocaleString();
+          var h = date.getHours();
+          if (h / 1 >= 1) { 
+            var s = 'PM';
+          } else { 
+            var s = 'AM';
+          }
+          if (h > 12) { 
+            h -= 12;
+          }
+          var min = date.getMinutes();
+          return '' + m + ' ' + (d <= 9 ? '0' + d : d) + ', ' + y + '<br>' + h + ':' + min + ' ' + s;
+        }
+
+        // Load recipients & convert last active time to user's local time
+        original_recipients = {};
+        {% for recipient in recipients %}
+          original_recipients[{{recipient.id}}] = {
+            'first_name': '{{ recipient.first_name }}',
+            'last_name': '{{ recipient.last_name }}',
+            'organization': '{{ recipient.organization }}',
+            'email': '{{ recipient.email }}',
+            'status': '{{ recipient.status }}',
+            'nda_required': '{% if recipient.nda_required == true %}true{% else %}false{% endif %}',
+          };
+
+          // convert last accessed time to local 
+          {% if recipient.last_accessed is not none %}
+          localDate = new Date('{{ recipient.last_accessed.isoformat() }}' + 'Z');
+
+          $("tr#{{ recipient.id }} .last_accessed").html(dateToYMD(localDate));
+          {% endif %}
+        {% endfor %}
+
+        // (0/3) Handles loading modal with recipient resubmission form for failed invitations
+        $(".try_again").click(function(e) {
+          // (1/3) Grab recipient ID from parent <tr>
+          e.preventDefault();
+          recipient_id = $(this).closest('tr').attr('id'); 
+
+          // (2/3) Insert recipient values into modal form 
+          $("#resubmission_recipient_first_name").val(original_recipients[recipient_id].first_name);
+          $("#resubmission_recipient_last_name").val(original_recipients[recipient_id].last_name);
+          $("#resubmission_recipient_organization").val(original_recipients[recipient_id].organization);
+          $("#resubmission_recipient_email").val(original_recipients[recipient_id].email);
+          $("#resubmission_recipient_nda_required").attr('checked', original_recipients[recipient_id].nda_required);
+          $("#resubmission_recipient_id").val(recipient_id);
+
+          // (3/3) Display modal
+          $(".resubmission_modal").css("display", "block");
+        });
+
+        // Handles hiding modal on exit
+        $("#close_resubmission_modal").click(function(e) {
+          e.preventDefault();
+          $(".resubmission_modal").css("display", "none");
+        });
+
+        // Handles submitting recipient resubmission form
+        $(".recipient_resubmission_form").submit( function(e) {
+          e.preventDefault();
+          console.log('We in here....');
+          $.post("{{ url_for('fdb_resubmit_recipient') }}", $(".recipient_resubmission_form").serialize())
+            .done( function(resp) {
+              // if resp is successful, etc. 
+              if (resp.status == 'success') {
+                console.log('Successful resubmission!');
+                original_recipients[resp.id].first_name = resp.first_name;
+                original_recipients[resp.id].last_name = resp.last_name;
+                original_recipients[resp.id].organization = resp.organization;
+                original_recipients[resp.id].email = resp.email;
+                original_recipients[resp.id].status = resp.recipient_status;
+                original_recipients[resp.id].nda_required = resp.nda_required;
+
+                $("tr#" + resp.id + " .recipient_first_name").text(resp.first_name);
+                $("tr#" + resp.id + " .recipient_last_name").text(resp.last_name);
+                $("tr#" + resp.id + " .recipient_organization").text(resp.organization);
+                $("tr#" + resp.id + " .recipient_status").text(resp.recipient_status);
+                $(".try_again").remove();
+
+                $(".resubmission_modal").css("display", "none");
+              } else {
+                console.log('Failed. Displaying error message: ' + resp.status)
+                // insert error message into modal somewhere... 
+                $("#resubmission_error").text(resp.status);
+              }
+
+              console.log('Done...');
+            })
+            .fail( function(resp) {
+              alert(resp);
+            });
+        });
+
+        // Handles displaying modal for deletion of file share
+        $(".delete_file_btn").click( function(e) {
+          e.preventDefault();
+          $(".deletion_modal").css("display", "block");
+        });
+
+        // Handles submitting deletion of file share
+        $("#submit_file_deletion").click( function(e) { 
+          e.preventDefault();
+          $.post("{{ url_for('delete_free_file_share') }}", { 'dbc': '{{ dbc }}' })
+            .done( function(resp) {
+              if (resp.status == 'success') {
+                window.location.href ='/';
+              }
+            })
+            .fail( function(resp) {
+              alert(resp);
+            });
+        });
+
+       // Handles hiding deletion modal on exit
+       $("#close_deletion_modal").click(function(e) {
+          e.preventDefault();
+          $(".deletion_modal").css("display", "none");
+        });
+      
+      });  
+    </script>
+{% endblock %}
+
+{% block content %}
+      <!-- (7) DASHBOARD -->
+      <section class="mb-section container">
+
+        <!-- progress bar -->
+        <div class="progressbar_container">
+          <ul class="progressbar">
+              <li class="active">Upload file</li>
+              <li class="active">Identify yourself</li>
+              <li class="active">Select recipients</li>
+              <li class="active">Send</li>
+          </ul>
+        </div>
+
+        <div>  
+          <div class="section_header centered">
+            <!-- section title -->
+            <h2 class="section_title centered mb-section-br">Status Dashboard</h2>
+            <!-- section title caption-->
+            <div class="dashboard_info">
+              <div class="dashboard_card dashboard_file_card">
+                <span class="dashboard_card_id">File name:</span><br>
+                <div><i class="fas fa-file-pdf"></i>&nbsp;<span class="file_id">{{ file.file_name }}</span></div>
+              </div>
+              <div class="dashboard_card">
+                <span class="dashboard_card_id">Time remaining:</span><br>
+                {{ days_remaining }} days
+              </div>
+              <div class="dashboard_card">
+                <button class="delete_file_btn" type="submit">
+                  Delete
+                </button>
+                <button class="extend_file_btn" type="submit">
+                  Extend
+                </button>
+
+              </div>
+            </div>
+
+
+          </div>
+
+          <!-- section body -->
+          <div class="section_body centered">
+            <div class="data_table">
+              <div class="table_container">
+                <div class="table_header">
+                  <h2 class="table_title"></h2>
+                </div>
+                <table class="data_table">
+                  <thead>
+                    <!-- header row -->
+                    <tr class="data_table_header">
+                      <th class="data_table_header_cell left" scope="col">Name</th>
+                      <th class="data_table_header_cell right" scope="col">Status</th>
+                      <th class="data_table_header_cell right" scope="col">Views</th>
+                      <th class="data_table_header_cell right" scope="col">Last active</th>
+                      <th class="data_table_header_cell right" scope="col">Legal</th>
+                      <th class="data_table_header_cell right" scope="col">Certificate</th>
+                    </tr>
+                  </thead>
+                  <tbody class="data_table_body">
+                    <!-- row 1-->
+                    {% for recipient in recipients %}
+                    <tr class="data_table_row" id="{{ recipient.id }}">
+                      <th class="data_table_row_cell left recipient_full_name_section" scope="row">
+                        <span class="recipient_first_name">{{ recipient.first_name }}</span> <span class="recipient_last_name">{{ recipient.last_name }}</span><br>
+                        <span class="data_table_subtext recipient_organization">{{ recipient.organization }}</span>
+                      </th>
+                      <td class="data_table_row_cell right recipient_status_section">
+                        <span class="recipient_status">{{ recipient.status }}</span>
+                        {% if recipient.status == "Invitation failed" %}
+                        <br><a class="try_again" id="{{ recipient.id }}">Try again?</a>
+                        {% endif %}
+                      </td>
+                      <td class="data_table_row_cell right recipient_access_stats">
+                        <i class="fas fa-eye"></i> <span class="recipient_views">{{ recipient.views }}</span><br>
+                        <!--<i class="fas fa-file-download"></i> <span class="recipient_downloads">{{ recipient.downloads }}</span>-->
+                      </td>
+                      <td class="data_table_row_cell right last_accessed">
+                        {% if recipient.last_accessed is none %}
+                        N/A
+                        {% else %}
+                        {{ recipient.last_accessed.strftime("%B %d") }}<br>
+                        {{ recipient.last_accessed.strftime("%X%p") }}
+                        {% endif %}
+                      </td>
+                      <td class="data_table_row_cell right">
+                        {% if recipient.nda.all()|length == 1 %}
+                        <a href="{{ recipient.nda[0].file_url }}?policy={{ policy }}&signature={{ signature }}&dl=1" target="_blank" id="recipient_nda">Signed NDA</a>
+                        {% else %}
+                        Not Yet Signed
+                        {% endif %}
+                      </td>
+                      <td class="data_table_row_cell right">
+                        {% if recipient.nda.all()|length == 1 %}
+                        <a href="{{ recipient.nda[0].certificate_file_url }}?policy={{ policy }}&signature={{ signature }}&dl=1" target="_blank">Audit Log</a>
+                        {% endif %}
+                        {% if recipient.nda.all()|length == 1 and file.paid == true %}
+                        <a href="#">Audit Log</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="resubmission_modal" class="resubmission_modal">
+        <div class="modal-content">
+          <!-- resubmission form -->
+          <div class="resubmission_form_container centered">
+            <span id="close_resubmission_modal" class="close_modal">&times;</span>
+            <form action="#" method="POST" id="recipient_form" class="recipient_resubmission_form">
+              <div class="recipient_grid centered">
+                <div class="recipient_card centered" id="1" style="width: 100%;">
+                  <div class="recipient_card_label"><i class="fas fa-id-card header_icon"></i></div>
+                  <input type="text" class="recipient_card_item" id="resubmission_recipient_first_name" name="recipient_first_name" placeholder="First name" minlength="2" required><br>
+                  <input type="text" class="recipient_card_item" id="resubmission_recipient_last_name" name="recipient_last_name" placeholder="Last name" minlength="2" required><br>
+                  <input type="text" class="recipient_card_item" id="resubmission_recipient_organization" name="recipient_organization" placeholder="Organization"><br>
+                  <input type="email" class="recipient_card_item" id="resubmission_recipient_email" name="recipient_email" placeholder="Email address" required><br>
+                  Require NDA? <input type="checkbox" id="resubmission_recipient_nda_required" name="recipient_nda_required" ><br>
+                  <input type="hidden" name="dbc" value="{{ dbc }}">
+                  <input type="hidden" name="resubmission_recipient_id" id="resubmission_recipient_id" value="">
+                </div>
+              </div>
+              <input type="hidden" id="recipients_index" name="recipients_index" value="">
+              <div class="recipient_buttons centered" style="margin-top: -15px;">
+                <div class="recipient_button">
+                  <button class="button button-emphasized recipient_button_submit" id="resubmit_recipient_btn" type="submit" style="height: auto; margin-bottom: 15px;">
+                    Send &nbsp;<i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+                <span id="resubmission_error" style="font-size: 10px; color: red;"></span>
+              </div>
+            </form>
+          </div>
+          <!-- end resubmission form -->
+        </div>
+      </div>
+
+      <div id="deletion_modal" class="deletion_modal">
+        <div class="modal-content">
+          <!-- resubmission form -->
+          <div class="resubmission_form_container centered">
+            <span id="close_deletion_modal" class="close_modal">&times;</span>
+              <div class="recipient_grid centered">
+                <div class="recipient_card centered" style="width: 100%;">
+                  <h2 style="color: red; font-weight: bold;">Are you sure you want to delete this file share?</h2><br>
+                  <h4 style="margin-top: -5px;">This file as well as any recipient copies currently available will delete immediately and no longer be available.</h4>
+                </div>
+              </div>
+              <div class="recipient_buttons centered" style="margin-top: -15px;">
+                <div class="recipient_button">
+                  <button class="button button-emphasized recipient_button_submit" id="submit_file_deletion" type="submit" style="height: auto; width: auto; margin-bottom: 15px; background-color: red;">
+                    Delete Forever &nbsp;<i class="fas fa-backspace"></i>
+                  </button>
+                </div>
+                <span id="deletion_error" style="font-size: 10px; color: red;"></span>
+              </div>
+          </div>
+          <!-- end resubmission form -->
+        </div>
+      </div>
+
+{% endblock %}

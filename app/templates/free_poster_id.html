@@ -1,0 +1,67 @@
+{% extends "free_base.html" %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $("#id_poster").validate();
+      });
+    </script>
+{% endblock %}
+
+
+{% block content %}          
+      <!-- (4) POSTER IDENTIFICATION -->
+      <section class="mb-section container">
+
+        <!-- progress bar -->
+        <div class="progressbar_container">
+          <ul class="progressbar">
+              <li class="active">Upload file</li>
+              <li>Identify yourself</li>
+              <li>Select recipients</li>
+              <li>Send</li>
+          </ul>
+        </div>
+
+        <div>  
+          <!-- section header-->
+          <div class="section_header centered">
+            <!-- section title -->
+            <h2 class="section_title centered mb-section-br">Identify yourself</h2>
+            <!-- section title caption-->
+            <p class="section_caption  mb-section-br">
+              Tell us who owns the document and where to send a private status link. Check "watermark file" if you'd like to add a transparent watermark to the file sent to your intended recipients. 
+            </p>
+          </div>
+
+          <!-- section body -->
+          <div class="section_body centered">
+            <form id="id_poster" method="POST" action="/invite/{{ file_upload_id }}n0ABjSyn29lM34ds{{ file_handle }}">
+              <div class="recipient_grid centered">
+                <div class="identity_card identity_form centered">
+                  <div class="recipient_card_label"><i class="fa fa-user-check icon_heading"></i></div>
+                  <input type="text" class="recipient_card_item" name="poster_first_name" placeholder="First name" minlength="2" required><br>
+                  <input type="text" class="recipient_card_item" name="poster_last_name" placeholder="Last name" minlength="2" required><br>
+                  <input type="text" class="recipient_card_item" name="poster_organization" placeholder="Organization"><br>
+                  <input type="email" class="recipient_card_item" name="poster_email" placeholder="Email address" required><br>
+                  {% if watermarkable == true %}Watermark file? <input type="checkbox" name="watermarked" ><br>{% else %}<div style="margin: 0px; height: 22px;"></div>{% endif %}
+                  <div class="recipient_button">
+                    <button class="identify_button_submit " type="submit">
+                      Continue &nbsp;<i class="fas fa-arrow-circle-right"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="identity_card watermark_ex centered">
+                  <img src="{{ url_for('static', filename='assets/watermark2.png') }}" class="watermark_ex_img">
+                </div>
+
+
+              </div>
+
+    
+            </form>
+          </div>
+          
+      </section>      
+{% endblock %}
