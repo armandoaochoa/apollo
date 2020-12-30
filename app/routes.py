@@ -1370,8 +1370,8 @@ def free_recip_viewer(private_invitation_url):
 @app.errorhandler(404)
 def not_found(e):
   return redirect(url_for('index'))
-
+'''
 @app.errorhandler(500)
 def server_error(e):
   return render_template('error.html')
-
+'''
