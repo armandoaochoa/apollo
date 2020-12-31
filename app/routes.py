@@ -427,7 +427,7 @@ def free_send(file_share_parameters):
     print(file_url)
 
     # (5.3-5.7) Define watermark process to loop through recipients and generate custom watermarked PDFs for each
-    def watermark():
+    def watermark(recipients):
       # (5.3) Download FreeFileShare file from filestack
       '''
       downloaded_file = requests.get(file_url)
@@ -508,7 +508,7 @@ def free_send(file_share_parameters):
       os.remove(target_pdf_path)
 
     # (6/8) Run watermark process asynchronously 
-    async_watermark_process = Process(target=watermark, daemon=True)
+    async_watermark_process = Process(target=watermark, args=(recipients,), daemon=True)
     async_watermark_process.start()
 
   # (7/8) Send confirmation email to user
