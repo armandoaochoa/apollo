@@ -463,7 +463,8 @@ def free_send(file_share_parameters):
         num_text_repetitions = math.ceil(45 / len(recipient.first_name + recipient.last_name))
         text = (recipient.first_name + ' ' + recipient.last_name + ' \u2022 ') * num_text_repetitions
 
-        if len(recipient.organization) > 0:
+        #if len(recipient.organization) > 0:
+        if recipient.organization is not None:
           num_subtext_legal_repetitions = math.ceil(120 / len(recipient.email + recipient.organization))
           subtext_legal = (recipient.email + ' \u2022 ' + recipient.organization + ' \u2022 ') * num_subtext_legal_repetitions
         else:
