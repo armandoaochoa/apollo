@@ -28,7 +28,8 @@ csp = {
     'https://kit.fontawesome.com',
     'https://static.filestackapi.com',
     'https://ka-f.fontawesome.com/',
-    'https://www.google-analytics.com'
+    'https://www.google-analytics.com',
+    'https://upload.filestackapi.com'
   ],
   'style-src': [
     '\'self\'',
