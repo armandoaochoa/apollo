@@ -24,18 +24,7 @@ from PIL import Image, ImageDraw
 #from signapadpy import create_image, Padding
 import base64
 
-# just added
-from sqlalchemy import create_engine 
-from sqlalchemy.orm import sessionmaker
 
-app.config.update({
-    'SQLALCHEMY_POOL_SIZE': None,
-    'SQLALCHEMY_POOL_TIMEOUT': None
-})
-engine = create_engine (
-  app.config['SQLALCHEMY_DATABASE_URI']
-)
-Session = sessionmaker(bind=engine)
 
 
 # Helper function to create Filestack credentials for landing page [public facing]
@@ -1389,5 +1378,3 @@ def server_error(e):
   return render_template('error.html')
 '''
 
-# just added
-engine.pool.dispose()
