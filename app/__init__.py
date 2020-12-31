@@ -46,11 +46,6 @@ content_security_policy = {
 Talisman(app, content_security_policy)
 
 
-  
-
-style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
-
-
 # app configuration
 app.config.from_object(Config)
 
