@@ -31,6 +31,7 @@ csp = {
     'https://www.google-analytics.com',
     'https://upload.filestackapi.com',
     'https://fonts.gstatic.com'
+    'https://*.filestackapi.com'
   ],
   'style-src': [
     '\'self\'',
