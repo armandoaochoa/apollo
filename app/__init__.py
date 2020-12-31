@@ -26,7 +26,9 @@ csp = {
     'https://www.googletagmanager.com',
     'https://code.jquery.com',
     'https://kit.fontawesome.com',
-    'https://static.filestackapi.com'    
+    'https://static.filestackapi.com',
+    'https://ka-f.fontawesome.com/',
+    'https://www.google-analytics.com'
   ],
   'style-src': [
     '\'self\'',
@@ -43,7 +45,9 @@ csp = {
     'https://www.googletagmanager.com',
     'https://code.jquery.com',
     'https://kit.fontawesome.com',
-    'https://static.filestackapi.com'
+    'https://static.filestackapi.com',
+    'https://ka-f.fontawesome.com/'
+    'https://www.google-analytics.com'
   ],
   'style-src': [
     '\'self\'',
