@@ -529,24 +529,24 @@ def free_send(file_share_parameters):
     async_watermark_process.start()
 
   # (7/8) Send confirmation email to user
-  def email_confirmation():
-    body = 'Hello ' + file_share.owner.first_name + ' ' + file_share.owner.last_name + ',<br><br>' + 'Click through the following <a href="' + app.config['DOMAIN'] + '/fdb/' + file_share.dashboard_url + '">private link</a> to UnderNDA to confirm your email address.<br><br>Upon verifying, invitations with private links will be sent out to the recipients you selected where they will be asked to e-sign an NDA before viewing the watermarked document.<br><br>After verifying, you can access your file share dashboard for status updates and use logs via the same URL which also acts as your password. Do not share or reveal it. <br><br>Your free file share and its copies will auto-delete from our file storage in 7 days.<br><br>For future or expanded confidential file sharing needs, check out our <a href="' + app.config['DOMAIN'] + '/premium">premium plans</a> and don\'t hesitate to reply to this email with any questions.<br><br>Best,<br>UnderNDA'
-    message = Mail(
-    from_email=app.config['EMAIL_FROM'],
-    to_emails=file_share.owner.email,
-    subject='Please verify your email address to share your file.',
-    html_content=body)
+  #def email_confirmation():
+  body = 'Hello ' + file_share.owner.first_name + ' ' + file_share.owner.last_name + ',<br><br>' + 'Click through the following <a href="' + app.config['DOMAIN'] + '/fdb/' + file_share.dashboard_url + '">private link</a> to UnderNDA to confirm your email address.<br><br>Upon verifying, invitations with private links will be sent out to the recipients you selected where they will be asked to e-sign an NDA before viewing the watermarked document.<br><br>After verifying, you can access your file share dashboard for status updates and use logs via the same URL which also acts as your password. Do not share or reveal it. <br><br>Your free file share and its copies will auto-delete from our file storage in 7 days.<br><br>For future or expanded confidential file sharing needs, check out our <a href="' + app.config['DOMAIN'] + '/premium">premium plans</a> and don\'t hesitate to reply to this email with any questions.<br><br>Best,<br>UnderNDA'
+  message = Mail(
+  from_email=app.config['EMAIL_FROM'],
+  to_emails=file_share.owner.email,
+  subject='Please verify your email address to share your file.',
+  html_content=body)
 
-    try:
-      sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
-      response = sg.send(message)
-      # just added
-      print(response)
-    except Exception as e:
-      print(e.message)
+  try:
+    sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
+    response = sg.send(message)
+    # just added
+    print(response)
+  except Exception as e:
+    print(e.message)
     
-  async_email_confirmation_process = Process(target=email_confirmation, daemon=True)
-  async_email_confirmation_process.start()
+  #async_email_confirmation_process = Process(target=email_confirmation, daemon=True)
+  #async_email_confirmation_process.start()
 
   # (8/8) Render template 
   return render_template('free_send.html')
