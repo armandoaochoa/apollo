@@ -1276,7 +1276,7 @@ def free_recipient_processor(private_invitation_url):
           this_nda.certificate_file_name = certificate_file_name
           this_nda.certificate_file_url = filestack_response.url
           db.session.commit()
-          db.session.close()
+          #db.session.close()
 
           os.remove(certificate_contents_file_path)
           os.remove(certificate_file_path)
