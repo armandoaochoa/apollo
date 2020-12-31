@@ -30,7 +30,7 @@ csp = {
     'https://ka-f.fontawesome.com/',
     'https://www.google-analytics.com',
     'https://upload.filestackapi.com',
-    'https://fonts.gstatic.com'
+    'https://fonts.gstatic.com',
     'https://*.filestackapi.com'
   ],
   'style-src': [
