@@ -15,31 +15,39 @@ app = Flask(__name__)
 csp = {
   'default-src': [
     '\'self\'',
-    'unsafe-inline',
+    '\'unsafe-inline\'',
     'https://www.fileundernda.com',
     'https://www.fileundernda.com',
     'www.fileundernda.com',
     'fileundernda.com'
     'https://ssl.gstatic.com',
     'data:',
-    'gap:'
+    'gap:',
+    'https://www.googletagmanager.com',
+    'https://code.jquery.com',
+    'https://kit.fontawesome.com',
+    'https://static.filestackapi.com'    
   ],
   'style-src': [
     '\'self\'',
-    'unsafe-inline'
+    '\'unsafe-inline\''
   ],
   'media-src': '*',
   'script-src': [
     '\'self\'',
-    'unsafe-inline',
+    '\'unsafe-inline\'',
     'https://fileundernda.com',
     'https://www.fileundernda.com',
     'www.fileundernda.com',
-    'fileundernda.com'
+    'fileundernda.com',
+    'https://www.googletagmanager.com',
+    'https://code.jquery.com',
+    'https://kit.fontawesome.com',
+    'https://static.filestackapi.com'
   ],
   'style-src': [
     '\'self\'',
-    'unsafe-inline'
+    '\'unsafe-inline\''
   ]
 }
 
