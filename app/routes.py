@@ -1391,9 +1391,14 @@ def free_recip_viewer(private_invitation_url):
 @app.errorhandler(404)
 def not_found(e):
   return redirect(url_for('index'))
-'''
+
 @app.errorhandler(500)
 def server_error(e):
   return render_template('error.html')
-'''
+
+@app.after_request
+def add_security_headers(resp):
+    resp.headers['Content-Security-Policy']="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' https://www.fileundernda.com www.fileundernda.com fileundernda.com; style-src 'self' 'unsafe-inline'; media-src *; script-src 'self' 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com"
+    return resp
+
 
