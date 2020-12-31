@@ -1398,7 +1398,7 @@ def server_error(e):
 
 @app.after_request
 def add_security_headers(resp):
-    resp.headers['Content-Security-Policy']="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com https://www.fileundernda.com www.fileundernda.com fileundernda.com; style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'self' 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
+    resp.headers['Content-Security-Policy']="default-src 'unsafe-inline' data: gap: https://ssl.gstatic.com https://www.fileundernda.com www.fileundernda.com fileundernda.com; style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
     return resp
 
 
