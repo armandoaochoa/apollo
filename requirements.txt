@@ -6,6 +6,7 @@ filestack-python==3.2.1
 Flask==1.1.2
 Flask-Migrate==2.5.3
 Flask-SQLAlchemy==2.4.4
+flask-talisman==0.7.0
 idna==2.10
 itsdangerous==1.1.0
 Jinja2==2.11.2
