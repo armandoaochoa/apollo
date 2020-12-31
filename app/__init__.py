@@ -12,7 +12,7 @@ from flask_talisman import Talisman
 app = Flask(__name__)
 
 # SSL / Content-Security-Policy
-content_security_policy = {
+csp = {
   'default-src': [
     '\'self\'',
     'unsafe-inline',
@@ -43,7 +43,7 @@ content_security_policy = {
   ]
 }
 
-Talisman(app, content_security_policy)
+Talisman(app, content_security_policy=csp)
 
 
 # app configuration
