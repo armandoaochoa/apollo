@@ -32,7 +32,13 @@ csp = {
   ],
   'style-src': [
     '\'self\'',
-    '\'unsafe-inline\''
+    '\'unsafe-inline\'',
+    'https://www.googletagmanager.com',
+    'https://code.jquery.com',
+    'https://kit.fontawesome.com',
+    'https://static.filestackapi.com',
+    'https://ka-f.fontawesome.com/',
+    'https://www.google-analytics.com'
   ],
   'media-src': '*',
   'script-src': [
