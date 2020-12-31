@@ -543,7 +543,7 @@ def free_send(file_share_parameters):
     # just added
     print(response)
   except Exception as e:
-    print(e.message)
+    print(e)
     
   #async_email_confirmation_process = Process(target=email_confirmation, daemon=True)
   #async_email_confirmation_process.start()
@@ -700,7 +700,7 @@ def free_dashboard(private_dashboard_code):
         sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
         response = sg.send(message)
       except Exception as e:
-        print(e.message)
+        print(e)
 
       if response.status_code == 202:
         use_log = FreeUseLog(file_share_id=file_share.id, recipient_id=recipient.id, action='invitation emailed') 
