@@ -10,7 +10,46 @@ from flask_talisman import Talisman
 
 # app instance
 app = Flask(__name__)
-Talisman(app)
+
+# SSL / Content-Security-Policy
+content_security_policy = {
+  'default-src': [
+    '\'self\'',
+    'unsafe-inline',
+    'https://www.fileundernda.com',
+    'https://www.fileundernda.com',
+    'www.fileundernda.com',
+    'fileundernda.com'
+    'https://ssl.gstatic.com',
+    'data:',
+    'gap:'
+  ],
+  'style-src': [
+    '\'self\'',
+    'unsafe-inline'
+  ],
+  'media-src': '*',
+  'script-src': [
+    '\'self\'',
+    'unsafe-inline',
+    'https://fileundernda.com',
+    'https://www.fileundernda.com',
+    'www.fileundernda.com',
+    'fileundernda.com'
+  ],
+  'style-src': [
+    '\'self\'',
+    'unsafe-inline'
+  ]
+}
+
+Talisman(app, content_security_policy)
+
+
+  
+
+style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
+
 
 # app configuration
 app.config.from_object(Config)

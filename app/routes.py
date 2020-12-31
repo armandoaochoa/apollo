@@ -1396,9 +1396,11 @@ def not_found(e):
 def server_error(e):
   return render_template('error.html')
 
+'''
 @app.after_request
 def add_security_headers(resp):
     resp.headers['Content-Security-Policy']="default-src 'unsafe-inline' data: gap: https://ssl.gstatic.com https://www.fileundernda.com www.fileundernda.com fileundernda.com; style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
     return resp
+'''
 
 
