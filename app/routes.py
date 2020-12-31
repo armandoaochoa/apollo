@@ -514,6 +514,7 @@ def free_send(file_share_parameters):
         # (5.10) Store Filestack URL for recipient
         recipient.watermarked_file_url = filestack_response.url
         db.session.commit()
+        db.session.close()
 
         # (5.11) Delete watermark and watermarked file 
         os.remove(target_watermark_path)
@@ -524,7 +525,6 @@ def free_send(file_share_parameters):
 
     # (6/8) Run watermark process asynchronously 
     # just added
-    #engine.pool.dispose()
     async_watermark_process = Process(target=watermark, args=(recipients,), daemon=True)
     async_watermark_process.start()
 
@@ -540,11 +540,13 @@ def free_send(file_share_parameters):
     try:
       sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
       response = sg.send(message)
+      # just added
+      print(response)
     except Exception as e:
       print(e.message)
     
-    async_email_confirmation_process = Process(target=email_confirmation, daemon=True)
-    async_email_confirmation_process.start()
+  async_email_confirmation_process = Process(target=email_confirmation, daemon=True)
+  async_email_confirmation_process.start()
 
   # (8/8) Render template 
   return render_template('free_send.html')
