@@ -21,7 +21,7 @@ from sendgrid.helpers.mail import (Mail, Attachment, FileContent, FileName, File
 import textwrap
 import base64
 from PIL import Image, ImageDraw
-from signapadpy import create_image, Padding
+#from signapadpy import create_image, Padding
 import base64
 
 
