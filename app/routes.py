@@ -1067,7 +1067,7 @@ def free_recipient_processor(private_invitation_url):
 
           # (3.10) Email executed contract PDF to recipient
           #def send_contract():
-          body = 'Hello ' + recipient.first_name + ' ' + recipient.last_name + ',<br><br>' + 'Attached is a PDF of the Non-disclosure Agreement you recently signed at www.FileUnderNDA.com. Please store it for your legal records. <br><br>For your own personal or business confidential file sharing needs, <a href="http://www.fileundernda.com">check us out</a> and feel free to reply to this email with any questions.<br><br>Best,<br>UnderNDA'
+          body = 'Hello ' + recipient.first_name + ' ' + recipient.last_name + ',<br><br>' + 'Attached is a PDF of the Non-disclosure Agreement you recently signed at www.FileUnderNDA.com. Please store it for your legal records. <br><br>For your own personal or business confidential file sharing needs, <a href="https://www.fileundernda.com">check us out</a> and feel free to reply to this email with any questions.<br><br>Best,<br>UnderNDA'
           message = Mail(
           from_email=app.config['EMAIL_FROM'],
           to_emails=recipient.email,
@@ -1396,11 +1396,6 @@ def not_found(e):
 def server_error(e):
   return render_template('error.html')
 
-'''
-@app.after_request
-def add_security_headers(resp):
-    resp.headers['Content-Security-Policy']="default-src 'unsafe-inline' data: gap: https://ssl.gstatic.com https://www.fileundernda.com www.fileundernda.com fileundernda.com; style-src 'self' 'unsafe-inline'; media-src *; script-src-elem 'unsafe-inline' https://fileundernda.com https://www.fileundernda.com www.fileundernda.com fileundernda.com;"
-    return resp
-'''
+
 
 
