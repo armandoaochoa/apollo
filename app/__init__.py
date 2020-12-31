@@ -54,10 +54,6 @@ csp = {
     'https://static.filestackapi.com',
     'https://ka-f.fontawesome.com/'
     'https://www.google-analytics.com'
-  ],
-  'style-src': [
-    '\'self\'',
-    '\'unsafe-inline\''
   ]
 }
 
