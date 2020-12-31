@@ -400,7 +400,7 @@ def free_send(file_share_parameters):
       abort(400)
   
   db.session.commit()
-  recipients = file_share.recipients
+  recipients = file_share.recipients.all() # tried this here...
 
   # (5/8) Watermark process
   if file_share.watermarked is True:
