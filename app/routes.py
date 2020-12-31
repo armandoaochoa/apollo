@@ -24,6 +24,18 @@ from PIL import Image, ImageDraw
 #from signapadpy import create_image, Padding
 import base64
 
+# just added
+from sqlalchemy import create_engine 
+from sqlalchemy.orm import sessionmaker
+
+app.config.update({
+    'SQLALCHEMY_POOL_SIZE': None,
+    'SQLALCHEMY_POOL_TIMEOUT': None
+})
+engine = create_engine (
+  app.config['SQLALCHEMY_DATABASE_URI']
+)
+Session = sessionmaker(bind=engine)
 
 
 
@@ -428,6 +440,7 @@ def free_send(file_share_parameters):
 
     # (5.3-5.7) Define watermark process to loop through recipients and generate custom watermarked PDFs for each
     def watermark(recipients):
+      from app import db
       # (5.3) Download FreeFileShare file from filestack
       '''
       downloaded_file = requests.get(file_url)
@@ -508,6 +521,8 @@ def free_send(file_share_parameters):
       os.remove(target_pdf_path)
 
     # (6/8) Run watermark process asynchronously 
+    # just added
+    engine.pool.dispose()
     async_watermark_process = Process(target=watermark, args=(recipients,), daemon=True)
     async_watermark_process.start()
 
