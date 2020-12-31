@@ -975,6 +975,9 @@ def free_recipient_processor(private_invitation_url):
         ################################# CONTRACT AND CERTIFICATE GENERATION ############################
         def generate_contract_and_certificate(ip_address):
           ################# GENERATE & PROCESS CONTRACT (3.1-3.11) ####################
+          from flask_sqlalchemy import SQLAlchemy
+          db = SQLAlchemy(app)
+
           begin_time = datetime.datetime.utcnow()
           # (3.1) Set NDA contract template file path and a unique hash to append to created temporary local files
           template_pdf_path = app.config['TEMPORARY_FILE_PATH'] + 'nda_template.pdf'
@@ -1273,6 +1276,7 @@ def free_recipient_processor(private_invitation_url):
           this_nda.certificate_file_name = certificate_file_name
           this_nda.certificate_file_url = filestack_response.url
           db.session.commit()
+          db.session.close()
 
           os.remove(certificate_contents_file_path)
           os.remove(certificate_file_path)
