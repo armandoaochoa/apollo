@@ -26,11 +26,6 @@ engine = create_engine (
 )
 '''
 
-
-
-
-
-
 # must be at bottom to avoid circ refs
 from app import routes, models
 

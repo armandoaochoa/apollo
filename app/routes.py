@@ -440,6 +440,7 @@ def free_send(file_share_parameters):
 
     # (5.3-5.7) Define watermark process to loop through recipients and generate custom watermarked PDFs for each
     def watermark(recipients):
+      from flask_sqlalchemy import SQLAlchemy
       db = SQLAlchemy(app)
       # (5.3) Download FreeFileShare file from filestack
       '''
