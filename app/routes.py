@@ -1290,12 +1290,15 @@ def free_recipient_processor(private_invitation_url):
         ################################# END CONTRACT AND CERTIFICATE GENERATION ##########################
 
         render_doc_viewer = True
+        # return 'done'
       else:
         print('Invalid request.')
         abort(400)
     else:
       print('ERROR: NDA exists but recipient status does not indicate so.')
       abort(400)
+  
+  # to-do: try reopening another db connection here? 
   
   # (4/5) If recipient is not required to sign NDA
   if recipient.status == 'Verified identity' and recipient.nda_required is False:

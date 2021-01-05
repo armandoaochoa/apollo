@@ -1453,3 +1453,9 @@ margin-right: 100px ?
   width: auto; 
   margin: 15px 15px 25px;
 }
+
+.nav-logo {
+  height: auto;
+  width: auto;
+  max-width: 200px;
+}
