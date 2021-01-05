@@ -973,10 +973,12 @@ def free_recipient_processor(private_invitation_url):
         db.session.commit()
 
         ################################# CONTRACT AND CERTIFICATE GENERATION ############################
-        def generate_contract_and_certificate(ip_address, db, recipient):
+        def generate_contract_and_certificate(ip_address, db, recipient_id):
           ################# GENERATE & PROCESS CONTRACT (3.1-3.11) ####################
           #from flask_sqlalchemy import SQLAlchemy
           #db = SQLAlchemy(app)
+
+          recipient = FreeRecipient.query.get(recipient_id)
 
           begin_time = datetime.datetime.utcnow()
           # (3.1) Set NDA contract template file path and a unique hash to append to created temporary local files
@@ -1285,7 +1287,8 @@ def free_recipient_processor(private_invitation_url):
           time_elapsed = (end_time - begin_time).total_seconds()
           print(time_elapsed)
 
-        async_generate_contract_and_certificate_process = Process(target=generate_contract_and_certificate, args=(ip_address, db, recipient,), daemon=True)
+        recipient_id = recipient.id
+        async_generate_contract_and_certificate_process = Process(target=generate_contract_and_certificate, args=(ip_address, db, recipient_id,), daemon=True)
         async_generate_contract_and_certificate_process.start()
         ################################# END CONTRACT AND CERTIFICATE GENERATION ##########################
 
