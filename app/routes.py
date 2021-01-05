@@ -973,10 +973,10 @@ def free_recipient_processor(private_invitation_url):
         db.session.commit()
 
         ################################# CONTRACT AND CERTIFICATE GENERATION ############################
-        def generate_contract_and_certificate(ip_address, recipient):
+        def generate_contract_and_certificate(ip_address, db):
           ################# GENERATE & PROCESS CONTRACT (3.1-3.11) ####################
-          from flask_sqlalchemy import SQLAlchemy
-          db2 = SQLAlchemy(app)
+          #from flask_sqlalchemy import SQLAlchemy
+          #db = SQLAlchemy(app)
 
           begin_time = datetime.datetime.utcnow()
           # (3.1) Set NDA contract template file path and a unique hash to append to created temporary local files
@@ -1064,9 +1064,9 @@ def free_recipient_processor(private_invitation_url):
           recipient.status = 'NDA signed'
           this_nda = FreeNDA(file_share_id=file_share.id, recipient_id=recipient.id, signature=signature_b64_og, file_url=filestack_response.url, checksum=checksum, file_name=executed_contract_file_name)
           execution_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='agreed and signed', ip_address=ip_address, user_agent=user_agent)
-          db2.session.add(this_nda)
-          db2.session.add(execution_log)
-          db2.session.commit()
+          db.session.add(this_nda)
+          db.session.add(execution_log)
+          db.session.commit()
 
           # (3.10) Email executed contract PDF to recipient
           #def send_contract():
@@ -1103,8 +1103,8 @@ def free_recipient_processor(private_invitation_url):
           contract_emailed_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='contract emailed')
           recipient.copy_emailed = True
           recipient.status = 'NDA signed'
-          db2.session.add(contract_emailed_log)
-          db2.session.commit()
+          db.session.add(contract_emailed_log)
+          db.session.commit()
 
           os.remove(contract_contents_pdf_path)
           os.remove(signature_file_path)
@@ -1206,8 +1206,8 @@ def free_recipient_processor(private_invitation_url):
             # (3.21) Once existing logs have been written, create 'certificate generated' log and write to PDF
             if (counter == 3 and recipient.nda_required is False) or (counter == 5 and recipient.nda_required is True):
               certificate_generated_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='certificate generated', ip_address=ip_address, user_agent=user_agent)
-              db2.session.add(certificate_generated_log)
-              db2.session.commit()
+              db.session.add(certificate_generated_log)
+              db.session.commit()
 
               timestamp = str(certificate_generated_log.timestamp.strftime("%Y-%m-%d %H:%M:%S") + ' UTC')
               logtext = "UnderNDA generated this certificate"
@@ -1275,7 +1275,7 @@ def free_recipient_processor(private_invitation_url):
           
           this_nda.certificate_file_name = certificate_file_name
           this_nda.certificate_file_url = filestack_response.url
-          db2.session.commit()
+          db.session.commit()
           #db.session.close()
 
           os.remove(certificate_contents_file_path)
@@ -1285,7 +1285,7 @@ def free_recipient_processor(private_invitation_url):
           time_elapsed = (end_time - begin_time).total_seconds()
           print(time_elapsed)
 
-        async_generate_contract_and_certificate_process = Process(target=generate_contract_and_certificate, args=(ip_address, recipient,), daemon=True)
+        async_generate_contract_and_certificate_process = Process(target=generate_contract_and_certificate, args=(ip_address, db,), daemon=True)
         async_generate_contract_and_certificate_process.start()
         ################################# END CONTRACT AND CERTIFICATE GENERATION ##########################
 
@@ -1299,7 +1299,7 @@ def free_recipient_processor(private_invitation_url):
       abort(400)
   
   # to-do: try reopening another db connection here? 
-
+  
   # (4/5) If recipient is not required to sign NDA
   if recipient.status == 'Verified identity' and recipient.nda_required is False:
     render_doc_viewer = True
