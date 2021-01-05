@@ -977,7 +977,7 @@ def free_recipient_processor(private_invitation_url):
           ################# GENERATE & PROCESS CONTRACT (3.1-3.11) ####################
           #from flask_sqlalchemy import SQLAlchemy
           #db = SQLAlchemy(app)
-
+          this_session = db.session()
           recipient = FreeRecipient.query.get(recipient_id)
           file_share = FreeFileShare.query.get(file_share_id)
 
@@ -1067,9 +1067,9 @@ def free_recipient_processor(private_invitation_url):
           recipient.status = 'NDA signed'
           this_nda = FreeNDA(file_share_id=file_share.id, recipient_id=recipient.id, signature=signature_b64_og, file_url=filestack_response.url, checksum=checksum, file_name=executed_contract_file_name)
           execution_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='agreed and signed', ip_address=ip_address, user_agent=user_agent)
-          db.session.add(this_nda)
-          db.session.add(execution_log)
-          db.session.commit()
+          this_session.add(this_nda)
+          this_session.add(execution_log)
+          this_session.commit()
 
           # (3.10) Email executed contract PDF to recipient
           #def send_contract():
@@ -1106,8 +1106,8 @@ def free_recipient_processor(private_invitation_url):
           contract_emailed_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='contract emailed')
           recipient.copy_emailed = True
           recipient.status = 'NDA signed'
-          db.session.add(contract_emailed_log)
-          db.session.commit()
+          this_session.add(contract_emailed_log)
+          this_session.commit()
 
           os.remove(contract_contents_pdf_path)
           os.remove(signature_file_path)
@@ -1209,8 +1209,8 @@ def free_recipient_processor(private_invitation_url):
             # (3.21) Once existing logs have been written, create 'certificate generated' log and write to PDF
             if (counter == 3 and recipient.nda_required is False) or (counter == 5 and recipient.nda_required is True):
               certificate_generated_log = FreeUseLog(file_share_id=recipient.file_share.id, recipient_id=recipient.id, action='certificate generated', ip_address=ip_address, user_agent=user_agent)
-              db.session.add(certificate_generated_log)
-              db.session.commit()
+              this_session.add(certificate_generated_log)
+              this_session.commit()
 
               timestamp = str(certificate_generated_log.timestamp.strftime("%Y-%m-%d %H:%M:%S") + ' UTC')
               logtext = "UnderNDA generated this certificate"
@@ -1278,7 +1278,7 @@ def free_recipient_processor(private_invitation_url):
           
           this_nda.certificate_file_name = certificate_file_name
           this_nda.certificate_file_url = filestack_response.url
-          db.session.commit()
+          this_session.commit()
           #db.session.close()
 
           os.remove(certificate_contents_file_path)
