@@ -4,6 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_talisman import Talisman
 
+from rq import Queue
+from rq.job import Job
+from worker import conn
+
 # just added
 #from SQLAlchemy import create_engine 
 #from SQLAlchemy.orm import sessionmaker
@@ -32,7 +36,8 @@ csp = {
     'https://upload.filestackapi.com',
     'https://fonts.gstatic.com',
     'https://*.filestackapi.com',
-    'https://*.amazonaws.com'
+    'https://*.amazonaws.com',
+    'https://cdn.filestackcontent.com/'
   ],
   'style-src': [
     '\'self\'',
@@ -73,6 +78,9 @@ app.config.from_object(Config)
 # database & migration handling
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# redis
+q = Queue(connection=conn)
 
 '''
 engine = create_engine (

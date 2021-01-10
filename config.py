@@ -18,5 +18,7 @@ class Config(object):
 
   DOMAIN = os.environ.get('DOMAIN') or 'http://127.0.0.1:5000'
 
-  
+  PROD = os.environ.get('PROD') or 'production' # 'development'
+
+  #REDIS_URL = 'redis://localhost:6379'
 
