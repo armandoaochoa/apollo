@@ -88,7 +88,7 @@ class FreeNDA(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   file_share_id = db.Column(db.Integer, db.ForeignKey('freefileshare.id'), nullable=False)
   recipient_id = db.Column(db.Integer, db.ForeignKey('freerecipient.id'), nullable=False)
-  signature = db.Column(db.Text, unique=True, nullable=False)
+  signature = db.Column(db.Text, nullable=False)
   file_url = db.Column(db.String(250), nullable=True, unique=True)
   timestamp = db.Column(db.DateTime, default=datetime.utcnow)
   checksum = db.Column(db.String(200), nullable=True, unique=True)

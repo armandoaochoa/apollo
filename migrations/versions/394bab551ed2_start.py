@@ -116,8 +116,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['recipient_id'], ['freerecipient.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('checksum'),
-    sa.UniqueConstraint('file_url'),
-    sa.UniqueConstraint('signature')
+    sa.UniqueConstraint('file_url')
     )
     op.create_table('freeuselog',
     sa.Column('id', sa.Integer(), nullable=False),
